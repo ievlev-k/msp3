@@ -40,11 +40,11 @@ public class Result {
 
 
 
-    public boolean getResult() {
+    public boolean getPoint() {
         return result;
     }
 
-    public void setResult(boolean result) {
+    public void setPoint(boolean result) {
         this.result = result;
     }
 
@@ -80,12 +80,12 @@ public class Result {
 
     public void checkHit(){
         boolean hit = (x>= 0 && y >= 0 && r >= y + 2*x)|| (x<=0 && x >= -r && y <=0 && y >= -r/2)||(x>=0 && y <= 0 && (x*x + y*y <= r*r/4));
-        setResult(hit);
+        setPoint(hit);
     }
 
     @Override
     public String toString() {
-        return "Result: " +
+        return "Point: " +
                 "x = " + x +
                 ", y = " + y +
                 ", r = " + r +
