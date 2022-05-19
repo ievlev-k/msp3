@@ -1,0 +1,110 @@
+<?xml version="1.0"?>
+<project name="MispiLab3" default="lab3">
+    <property file="build.properties"/>
+
+    <path id="classpath.source">
+        <fileset dir="${lib.dir}" includes="**/*.jar"/>
+    </path>
+
+    <target name="native2ascii">
+        <native2ascii src="./src/main/java/resources" dest="./src/main/java/resources_new"
+                      includes="*.properties" ext=".properties"/>
+    </target>
+
+    <target name="lab3" depends="build">
+        <echo message="--- Lab3 Done ---"/>
+    </target>
+
+    <target name="compile">
+        <echo message="--- COMPILE STARTED ---"/>
+        <mkdir dir="${compiled.classes}"/>
+        <mkdir dir="${compiled.tests}"/>
+        <javac destdir="${compiled.classes}" includeantruntime="false">
+            <src path="${main}"/>
+            <classpath>
+                <pathelement location="${compiled.classes}"/>
+                <path refid="classpath.source"/>
+            </classpath>
+        </javac>
+        <javac destdir="${compiled.tests}" includeantruntime="false">
+            <src path="${test}"/>
+            <classpath>
+                <pathelement location="${compiled.classes}"/>
+                <path refid="classpath.source"/>
+            </classpath>
+        </javac>
+        <echo message="--- COMPILE DONE ---"/>
+    </target>
+
+    <target name="build" depends="compile">
+        <echo message="--- BUILD STARTED ---"/>
+        <jar destfile="${dest.jar}" basedir="${compiled.classes}" compress="false" index="true">
+            <manifest>
+                <attribute name="Main-Class" value="main.java.Main"/>
+            </manifest>
+        </jar>
+        <echo message="--- BUILD DONE ---"/>
+    </target>
+
+
+    <target name="clean">
+        <echo message="--- CLEAN DONE ---"/>
+        <delete dir="${compiled}"/>
+    </target>
+
+
+    <target name="alt">
+        <echo message="--- ALT STARTED ---"/>
+
+        <replace file="${main}/${current.name}.java"
+                 token="${current.name}"
+                 value="${changed.name}"/>
+        <replace file="${class.main}"
+                 token="${current.name}"
+                 value="${changed.name}"/>
+        <replace file="${class.tests}"
+                 token="${current.name}"
+                 value="${changed.name}"/>
+        <move todir="${main}" overwrite="true">
+            <fileset dir="${main}"/>
+            <globmapper from="${current.name}.java" to="${changed.name}.java"/>
+        </move>
+
+
+        <antcall target="build"/>
+
+
+        <replace file="${main}/${changed.name}.java"
+                 token="${changed.name}"
+                 value="${current.name}"/>
+        <replace file="${class.main}"
+                 token="${changed.name}"
+                 value="${current.name}"/>
+        <replace file="${class.tests}"
+                 token="${changed.name}"
+                 value="${current.name}"/>
+        <move todir="${main}" verbose="true" overwrite="true">
+            <fileset dir="${main}"/>
+            <globmapper from="${changed.name}.java" to="${current.name}.java"/>
+        </move>
+
+        <echo message="--- ALT DONE ---"/>
+    </target>
+
+
+    <target name="test" depends="build">
+        <echo message="--- TEST STARTED ---"/>
+        <junit printsummary="yes" fork="yes">
+            <classpath>
+                <path refid="classpath.source"/>
+                <pathelement location="${compiled.classes}"/>
+                <pathelement location="${compiled.tests}"/>
+            </classpath>
+            <batchtest fork="yes" todir="reports">
+                <fileset dir="${test}" includes="*Test*.java"/>
+            </batchtest>
+        </junit>
+        <echo message="--- TEST DONE ---"/>
+    </target>
+
+</project>
